@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastMCP Document Server - Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .card p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .result.error {
+            border-left-color: #ff6b6b;
+            background: #ffe0e0;
+        }
+        
+        .result.success {
+            border-left-color: #51cf66;
+            background: #e8f9f0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .status.connected {
+            background: rgba(81, 207, 102, 0.3);
+        }
+        
+        .status.disconnected {
+            background: rgba(255, 107, 107, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 FastMCP Document Server</h1>
+            <p>Interactive Tool Tester</p>
+        </div>
+        
+        <div id="status" class="status disconnected">
+            ⏳ Checking connection...
+        </div>
+        
+        <div class="grid">
+            <!-- List Documents -->
+            <div class="card">
+                <h2>📋 List Documents</h2>
+                <p>Retrieve all documents in the documents directory with metadata.</p>
+                <button onclick="testListDocuments()" id="btn-list">
+                    Test Tool
+                </button>
+                <div id="result-list" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- Read Document -->
+            <div class="card">
+                <h2>📖 Read Document</h2>
+                <p>Read the content of a specific document.</p>
+                <input type="text" id="input-filename" placeholder="e.g., ai_future.txt" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+                <button onclick="testReadDocument()" id="btn-read">
+                    Test Tool
+                </button>
+                <div id="result-read" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- Save Summary -->
+            <div class="card">
+                <h2>💾 Save Summary</h2>
+                <p>Save a summary for a document.</p>
+                <input type="text" id="input-summary-filename" placeholder="File name" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+                <textarea id="input-summary-text" placeholder="Summary text..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px; height: 80px; font-family: Arial;"></textarea>
+                <button onclick="testSaveSummary()" id="btn-save">
+                    Test Tool
+                </button>
+                <div id="result-save" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- Get Summary -->
+            <div class="card">
+                <h2>🔍 Get Summary</h2>
+                <p>Retrieve a previously saved summary.</p>
+                <input type="text" id="input-get-summary" placeholder="e.g., ai_future.txt" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+                <button onclick="testGetSummary()" id="btn-get">
+                    Test Tool
+                </button>
+                <div id="result-get" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- Delete Document -->
+            <div class="card">
+                <h2>🗑️ Delete Document</h2>
+                <p>Delete a document from the directory.</p>
+                <input type="text" id="input-delete" placeholder="e.g., ai_future.txt" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
+                <button onclick="testDeleteDocument()" id="btn-delete" style="background: #ff6b6b;">
+                    Test Tool
+                </button>
+                <div id="result-delete" class="result" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+        
+        // Check connection on load
+        window.addEventListener('load', async () => {
+            await checkConnection();
+        });
+        
+        async function checkConnection() {
+            try {
+                const response = await fetch(`${API_URL}/tools/list_documents/call`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                if (response.ok) {
+                    updateStatus(true);
+                } else {
+                    updateStatus(false);
+                }
+            } catch (error) {
+                updateStatus(false);
+            }
+        }
+        
+        function updateStatus(connected) {
+            const status = document.getElementById('status');
+            if (connected) {
+                status.textContent = '✅ Connected to FastMCP Server';
+                status.className = 'status connected';
+                enableButtons(true);
+            } else {
+                status.textContent = '❌ Cannot connect to FastMCP Server (ensure it is running on http://127.0.0.1:8000)';
+                status.className = 'status disconnected';
+                enableButtons(false);
+            }
+        }
+        
+        function enableButtons(enable) {
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = !enable;
+            });
+        }
+        
+        async function makeRequest(toolName, params) {
+            showLoading(true);
+            try {
+                const response = await fetch(`${API_URL}/tools/${toolName}/call`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(params)
+                });
+                
+                const data = await response.json();
+                showLoading(false);
+                return { success: response.ok, data };
+            } catch (error) {
+                showLoading(false);
+                return { success: false, error: error.message };
+            }
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function displayResult(resultId, result) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                resultDiv.className = 'result success';
+                resultDiv.textContent = JSON.stringify(result.data, null, 2);
+            } else {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `Error: ${result.error || 'Unknown error'}`;
+            }
+        }
+        
+        async function testListDocuments() {
+            const result = await makeRequest('list_documents', {});
+            displayResult('result-list', result);
+        }
+        
+        async function testReadDocument() {
+            const filename = document.getElementById('input-filename').value;
+            if (!filename) {
+                alert('Please enter a filename');
+                return;
+            }
+            const result = await makeRequest('read_document', { file_name: filename });
+            displayResult('result-read', result);
+        }
+        
+        async function testSaveSummary() {
+            const filename = document.getElementById('input-summary-filename').value;
+            const summary = document.getElementById('input-summary-text').value;
+            if (!filename || !summary) {
+                alert('Please enter both filename and summary text');
+                return;
+            }
+            const result = await makeRequest('save_summary', {
+                file_name: filename,
+                summary: summary,
+                metadata: { tags: ['test'] }
+            });
+            displayResult('result-save', result);
+        }
+        
+        async function testGetSummary() {
+            const filename = document.getElementById('input-get-summary').value;
+            if (!filename) {
+                alert('Please enter a filename');
+                return;
+            }
+            const result = await makeRequest('get_summary', { file_name: filename });
+            displayResult('result-get', result);
+        }
+        
+        async function testDeleteDocument() {
+            const filename = document.getElementById('input-delete').value;
+            if (!filename) {
+                alert('Please enter a filename');
+                return;
+            }
+            if (confirm(`Are you sure you want to delete ${filename}?`)) {
+                const result = await makeRequest('delete_document', { file_name: filename });
+                displayResult('result-delete', result);
+            }
+        }
+        
+        // Check connection periodically
+        setInterval(checkConnection, 5000);
+    </script>
+</body>
+</html>

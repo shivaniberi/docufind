@@ -1,0 +1,46 @@
+# RESTORE POINT FILES
+# Keep these safe - they contain all recovery information
+
+## Documentation Files (READ FIRST)
+RESTORE_COMPLETE.md          - Main restore guide (START HERE!)
+WORKING_RESTORE_POINT.md     - Detailed recovery instructions
+RESTORE_CHECKLIST.md         - Verification checklist
+RESTORE_POINT.md             - Quick reference
+
+## Critical Application Files
+run_server_fixed.py          - FastAPI REST server (MUST KEEP)
+serve_test_ui.py             - Test UI server (MUST KEEP)
+test_ui.html                 - Web interface (MUST KEEP)
+mcp_server/                  - FastMCP tools directory
+  └── document_server.py     - All 5 tools (MUST KEEP)
+
+## Configuration & Setup
+.env                         - API credentials (MUST KEEP SECURE)
+.gitignore                   - Git tracking config
+start.sh                     - Auto-startup script
+
+## Data & Dependencies
+documents/                   - Sample documents
+summaries/                   - Summary storage
+venv/                        - Python environment (can be recreated)
+
+## Version Control
+.git/                        - Git repository (CRITICAL)
+.git/objects/                - Compressed backup data
+.git/refs/                   - Branch references
+.git/HEAD                    - Current branch pointer
+
+## Quick Restore Commands
+
+# If only code is broken:
+git reset --hard HEAD
+
+# If everything is broken:
+rm -rf venv
+python3.12 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+git reset --hard HEAD
+
+# To see all restore points:
+git log --oneline
