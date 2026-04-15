@@ -1,12 +1,16 @@
 # DocuFind - Your document summarizer and insight assistant.
 
-DocuFind is a document intelligence app for uploading, indexing, searching, and chatting over your own files using a hybrid Retrieval-Augmented Generation (RAG) pipeline and an agentic workflow.
+DocuFind is an LLM-powered document intelligence system built using LangChain and LangGraph, enabling users to upload, index, search, and chat over their data using a hybrid Retrieval-Augmented Generation (RAG) pipeline and agent-based workflows.
 
 It includes:
-- FastAPI backend for document and RAG APIs
-- Streamlit frontend for upload, indexing, search, and chat
-- LangGraph multi-agent flow for classification, retrieval, summary, and reflection
-- Hybrid retrieval using BM25 + FAISS + RRF
+
+1. FastAPI backend for scalable document processing and RAG APIs
+2. Streamlit frontend for interactive upload, semantic search, and chat
+3. LangChain + LangGraph for LLM orchestration, multi-agent workflows, and stateful reasoning
+4. Hybrid retrieval using BM25 + FAISS (vector embeddings) + Reciprocal Rank Fusion (RRF)
+5. Context-aware memory for maintaining conversation history and improving response relevance
+6. Model Context Protocol (MCP) integration for efficient tool usage and fast context exchange between components
+7. Semantic search over document embeddings for accurate, context-grounded responses
 
 <img width="1302" height="767" alt="Screenshot 2026-04-15 at 1 12 49 AM (1)" src="https://github.com/user-attachments/assets/ac51f347-af02-47ac-933a-537bd169cff5" />
 
