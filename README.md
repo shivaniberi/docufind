@@ -8,11 +8,7 @@ It includes:
 - LangGraph multi-agent flow for classification, retrieval, summary, and reflection
 - Hybrid retrieval using BM25 + FAISS + RRF
 
-## Resume-Ready Highlights (Project Keywords)
 
-- Architected multi-agent RAG pipeline (LangChain + FAISS + BM25 hybrid retrieval) with semantic chunking and context engineering for hallucination-resistant LLM responses across PDF/TXT/MD corpora.
-- Implemented agentic patterns (ReAct orchestrator, Reflection summarizer) via Pydantic AI and ADK; exposed MCP toolset via FastMCP with asyncio tool calling and managed prompt template libraries for extensible document operations.
-- Built evaluation harness with 100% test coverage; achieved 65% query latency reduction via embedding caching and FAISS index partitioning; managed session memory with persistent context tracking across multi-LLM backends
 
 ## Features
 
