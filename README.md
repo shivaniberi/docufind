@@ -1,4 +1,4 @@
-# DocuFind
+# DocuFind - Your document summarizer and insight assistant.
 
 DocuFind is a document intelligence app for uploading, indexing, searching, and chatting over your own files using a hybrid Retrieval-Augmented Generation (RAG) pipeline and an agentic workflow.
 
