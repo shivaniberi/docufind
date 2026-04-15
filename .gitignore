@@ -56,3 +56,12 @@ summaries/*.bak
 # Node/npm (if using any frontend tools)
 node_modules/
 npm-debug.log
+
+# Local secrets/backups
+.env.backup
+.env.bak.codex
+
+# macOS and Python cache noise
+**/.DS_Store
+**/__pycache__/
+**/*.pyc

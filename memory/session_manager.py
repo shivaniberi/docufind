@@ -115,7 +115,7 @@ class InMemorySessionService:
         self.sessions: Dict[str, Session] = {}
         self.active_session_id: Optional[str] = None
         
-        logger.info("✅ InMemorySessionService initialized")
+        logger.info(" InMemorySessionService initialized")
     
     def create_session(self, title: str = "Untitled Session") -> Session:
         """
@@ -131,7 +131,7 @@ class InMemorySessionService:
         self.sessions[session.session_id] = session
         self.active_session_id = session.session_id
         
-        logger.info(f"✅ Created session: {session.session_id} - {title}")
+        logger.info(f" Created session: {session.session_id} - {title}")
         return session
     
     def get_session(self, session_id: str) -> Optional[Session]:
@@ -169,7 +169,7 @@ class InMemorySessionService:
         """
         if session_id in self.sessions:
             self.active_session_id = session_id
-            logger.info(f"✅ Activated session: {session_id}")
+            logger.info(f" Activated session: {session_id}")
             return True
         return False
     
@@ -196,7 +196,7 @@ class InMemorySessionService:
             del self.sessions[session_id]
             if self.active_session_id == session_id:
                 self.active_session_id = None
-            logger.info(f"✅ Deleted session: {session_id}")
+            logger.info(f" Deleted session: {session_id}")
             return True
         return False
     
@@ -238,7 +238,7 @@ class InMemorySessionService:
             with open(filepath, 'w') as f:
                 json.dump(data, f, indent=2)
             
-            logger.info(f"✅ Saved session to: {filepath}")
+            logger.info(f" Saved session to: {filepath}")
             return True
         except Exception as e:
             logger.error(f"Error saving session: {str(e)}")
@@ -278,7 +278,7 @@ class InMemorySessionService:
                 ))
             
             self.sessions[session.session_id] = session
-            logger.info(f"✅ Loaded session from: {filepath}")
+            logger.info(f" Loaded session from: {filepath}")
             return session
         except Exception as e:
             logger.error(f"Error loading session: {str(e)}")
@@ -288,7 +288,7 @@ class InMemorySessionService:
         """Clear all sessions."""
         self.sessions.clear()
         self.active_session_id = None
-        logger.info("✅ Cleared all sessions")
+        logger.info(" Cleared all sessions")
     
     def get_statistics(self) -> Dict[str, Any]:
         """Get session statistics."""

@@ -202,7 +202,7 @@ class OrchestratorAgent:
         self.conversation_history: List[Dict[str, str]] = []
         self.action_log: List[ActionResult] = []
         
-        logger.info(f"✅ OrchestratorAgent initialized with model: {self.config.model_name}")
+        logger.info(f" OrchestratorAgent initialized with model: {self.config.model_name}")
     
     def process(self, goal: str, context: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -215,12 +215,12 @@ class OrchestratorAgent:
         Returns:
             Dict: Result with reasoning, actions, and final answer
         """
-        logger.info(f"🎯 Processing goal: {goal}")
+        logger.info(f" Processing goal: {goal}")
         
         # Step 1: Create plan
         if self.config.enable_planning:
             plan = self._create_plan(goal, context)
-            logger.info(f"📋 Plan: {plan.reasoning}")
+            logger.info(f" Plan: {plan.reasoning}")
         else:
             plan = None
         
@@ -344,7 +344,7 @@ Be direct and efficient. Use tools to gather information needed for the goal."""
         # ReAct loop
         while step_count < self.config.max_reasoning_steps:
             step_count += 1
-            logger.info(f"🔄 ReAct step {step_count}")
+            logger.info(f" ReAct step {step_count}")
             
             try:
                 # Get Claude's response

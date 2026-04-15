@@ -3,7 +3,7 @@ Summarizer Agent Module - Phase 4
 
 Implements a document summarization agent using Pydantic AI with:
 - Typed result models for type safety
-- Reflection pattern: draft → critique → refine
+- Reflection pattern: draft  critique  refine
 - Quality control and iterative improvement
 - Source tracking and confidence scores
 
@@ -123,7 +123,7 @@ class SummarizerAgent:
         # Initialize Claude client
         self.client = anthropic.Anthropic()
         
-        logger.info(f"✅ SummarizerAgent initialized with model: {self.config.model_name}")
+        logger.info(f" SummarizerAgent initialized with model: {self.config.model_name}")
     
     def summarize(
         self,
@@ -140,11 +140,11 @@ class SummarizerAgent:
         Returns:
             SummaryResult: Typed result with summary and metadata
         """
-        logger.info(f"📝 Starting summarization (text length: {len(text)} chars)")
+        logger.info(f" Starting summarization (text length: {len(text)} chars)")
         
         # Step 1: Generate initial draft
         draft_summary = self._generate_draft(text, length_preference)
-        logger.info("✅ Draft summary generated")
+        logger.info(" Draft summary generated")
         
         # Step 2: Reflection with critique
         if self.config.enable_reflection:
@@ -152,11 +152,11 @@ class SummarizerAgent:
         else:
             refined_summary = draft_summary
         
-        logger.info("✅ Summary refined through reflection")
+        logger.info(" Summary refined through reflection")
         
         # Step 3: Extract key points
         key_points = self._extract_key_points(text, refined_summary)
-        logger.info(f"✅ Extracted {len(key_points)} key points")
+        logger.info(f" Extracted {len(key_points)} key points")
         
         # Step 4: Evaluate quality
         quality_score, quality_level, suggestions = self._evaluate_quality(
@@ -164,7 +164,7 @@ class SummarizerAgent:
             refined_summary,
             key_points
         )
-        logger.info(f"✅ Quality evaluated: {quality_level} ({quality_score:.2f})")
+        logger.info(f" Quality evaluated: {quality_level} ({quality_score:.2f})")
         
         # Calculate metrics
         original_words = len(text.split())
@@ -222,7 +222,7 @@ Provide only the summary text without any preamble or explanation."""
         current_summary = draft_summary
         
         for iteration in range(self.config.max_reflection_iterations):
-            logger.info(f"🔄 Reflection iteration {iteration + 1}")
+            logger.info(f" Reflection iteration {iteration + 1}")
             
             # Get critique
             critique_prompt = f"""Evaluate this summary of a document. Provide constructive critique.
@@ -243,7 +243,7 @@ Critique (be specific about what could be improved):"""
                     messages=[{"role": "user", "content": critique_prompt}]
                 )
                 critique = critique_response.content[0].text
-                logger.info(f"📝 Critique: {critique[:100]}...")
+                logger.info(f" Critique: {critique[:100]}...")
                 
                 # Refine based on critique
                 refine_prompt = f"""Given the critique below, improve the summary. 
@@ -265,7 +265,7 @@ Provide only the improved summary without explanation."""
                     messages=[{"role": "user", "content": refine_prompt}]
                 )
                 current_summary = refine_response.content[0].text
-                logger.info("✅ Summary refined")
+                logger.info(" Summary refined")
                 
             except Exception as e:
                 logger.error(f"Error in reflection loop: {str(e)}")
@@ -386,7 +386,7 @@ SUGGESTIONS: [list of 2-3 specific improvements]"""
         Returns:
             List[SummaryResult]: List of results
         """
-        logger.info(f"📚 Batch summarizing {len(texts)} documents")
+        logger.info(f" Batch summarizing {len(texts)} documents")
         results = []
         
         for i, text in enumerate(texts, 1):

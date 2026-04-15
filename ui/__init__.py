@@ -1,8 +1,8 @@
 """
 UI Package - Phase 5
 
-Contains the Gradio web interface:
-- app.py: Complete web UI with all features
+Primary UI:
+- streamlit_app.py: Streamlit chat + agent trace interface
 """
 
-__all__ = ["app"]
+__all__ = ["streamlit_app"]

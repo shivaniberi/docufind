@@ -203,7 +203,7 @@ class DocumentLoader:
     
     def estimate_tokens(self, text: str) -> int:
         """
-        Estimate token count for text (rough estimate: 1 token ≈ 4 characters).
+        Estimate token count for text (rough estimate: 1 token  4 characters).
         
         Args:
             text (str): Text to estimate tokens for

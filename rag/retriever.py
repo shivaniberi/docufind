@@ -169,7 +169,7 @@ class Retriever:
             else:
                 chunk_str = f"[Document {i}]\n{chunk_text}\n"
             
-            # Estimate tokens (rough: 1 token ≈ 4 characters)
+            # Estimate tokens (rough: 1 token  4 characters)
             chunk_tokens = len(chunk_str) // 4
             
             if token_count + chunk_tokens <= max_tokens:
