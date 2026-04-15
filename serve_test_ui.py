@@ -26,8 +26,8 @@ if __name__ == "__main__":
     os.chdir(DOCUFIND_DIR)
     
     with socketserver.TCPServer(("", PORT), TestUIHandler) as httpd:
-        print(f"✅ Test UI Server running on http://127.0.0.1:{PORT}")
-        print(f"📖 Open browser at: http://127.0.0.1:{PORT}/test_ui.html")
-        print(f"\n📝 FastMCP Server is running on http://127.0.0.1:8000")
+        print(f" Test UI Server running on http://127.0.0.1:{PORT}")
+        print(f" Open browser at: http://127.0.0.1:{PORT}/test_ui.html")
+        print(f"\n FastMCP Server is running on http://127.0.0.1:8000")
         print(f"   Test tools in the UI at http://127.0.0.1:{PORT}\n")
         httpd.serve_forever()

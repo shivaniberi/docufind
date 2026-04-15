@@ -42,7 +42,7 @@ def load_env():
 def example_1_initialize_pipeline():
     """Example 1: Initialize the RAG Pipeline."""
     print("\n" + "="*70)
-    print("📚 Example 1: Initialize RAG Pipeline")
+    print(" Example 1: Initialize RAG Pipeline")
     print("="*70)
     
     from rag import RAGPipeline, RAGConfig
@@ -58,13 +58,13 @@ def example_1_initialize_pipeline():
     # Initialize pipeline
     pipeline = RAGPipeline(config=config)
     
-    print("\n✅ Pipeline initialized successfully!")
+    print("\n Pipeline initialized successfully!")
     
     # Get status
     status = pipeline.get_status()
-    print("\n📊 Pipeline Status:")
+    print("\n Pipeline Status:")
     for key, value in status["config"].items():
-        print(f"  • {key}: {value}")
+        print(f"   {key}: {value}")
     
     return pipeline
 
@@ -72,7 +72,7 @@ def example_1_initialize_pipeline():
 def example_2_index_documents(pipeline):
     """Example 2: Load and index documents."""
     print("\n" + "="*70)
-    print("📖 Example 2: Load and Index Documents")
+    print(" Example 2: Load and Index Documents")
     print("="*70)
     
     # Create sample documents if they don't exist
@@ -111,51 +111,51 @@ def example_2_index_documents(pipeline):
         """
     }
     
-    print("\n📝 Creating sample documents...")
+    print("\n Creating sample documents...")
     for filename, content in sample_docs.items():
         filepath = docs_dir / filename
         if not filepath.exists():
             filepath.write_text(content)
-            print(f"  ✅ Created: {filename}")
+            print(f"   Created: {filename}")
         else:
-            print(f"  ℹ️  Already exists: {filename}")
+            print(f"    Already exists: {filename}")
     
     # Index documents
-    print("\n🔄 Indexing documents...")
+    print("\n Indexing documents...")
     result = pipeline.index_documents(collection_name="demo")
     
-    print("\n✅ Indexing complete!")
-    print(f"  📄 Documents loaded: {result['documents_loaded']}")
-    print(f"  📊 Chunks created: {result['chunks_created']}")
+    print("\n Indexing complete!")
+    print(f"   Documents loaded: {result['documents_loaded']}")
+    print(f"   Chunks created: {result['chunks_created']}")
 
 
 def example_3_search_documents(pipeline):
     """Example 3: Search documents without generating."""
     print("\n" + "="*70)
-    print("🔍 Example 3: Search Documents")
+    print(" Example 3: Search Documents")
     print("="*70)
     
     query = "What is machine learning?"
-    print(f"\n🔎 Searching for: '{query}'")
+    print(f"\n Searching for: '{query}'")
     
     results = pipeline.search(query, collection_name="demo", k=3)
     
-    print(f"\n✅ Found {len(results)} results:")
+    print(f"\n Found {len(results)} results:")
     for i, result in enumerate(results, 1):
         print(f"\n  Result {i}:")
-        print(f"    📄 File: {result['file']}")
-        print(f"    📊 Score: {result['score']}")
-        print(f"    📝 Content: {result['content']}")
+        print(f"     File: {result['file']}")
+        print(f"     Score: {result['score']}")
+        print(f"     Content: {result['content']}")
 
 
 def example_4_answer_question(pipeline):
     """Example 4: Answer a question with context."""
     print("\n" + "="*70)
-    print("❓ Example 4: Answer Question with RAG")
+    print(" Example 4: Answer Question with RAG")
     print("="*70)
     
     question = "What are the main types of machine learning?"
-    print(f"\n❓ Question: {question}")
+    print(f"\n Question: {question}")
     
     result = pipeline.answer_question(
         question,
@@ -164,25 +164,25 @@ def example_4_answer_question(pipeline):
     )
     
     if result["status"] == "success":
-        print("\n✅ Answer generated successfully!")
-        print(f"\n🤖 Answer:\n{result['answer']}")
-        print(f"\n📚 Documents retrieved: {result['documents_retrieved']}")
+        print("\n Answer generated successfully!")
+        print(f"\n Answer:\n{result['answer']}")
+        print(f"\n Documents retrieved: {result['documents_retrieved']}")
         
-        print("\n📍 Sources:")
+        print("\n Sources:")
         for i, source in enumerate(result['sources'], 1):
             print(f"  {i}. {source['file']} (Score: {source['score']})")
     else:
-        print(f"\n❌ Error: {result.get('error', 'Unknown error')}")
+        print(f"\n Error: {result.get('error', 'Unknown error')}")
 
 
 def example_5_complex_question(pipeline):
     """Example 5: Complex question with multi-query expansion."""
     print("\n" + "="*70)
-    print("🧠 Example 5: Complex Question with Multi-Query")
+    print(" Example 5: Complex Question with Multi-Query")
     print("="*70)
     
     question = "How does machine learning differ from artificial intelligence?"
-    print(f"\n❓ Question: {question}")
+    print(f"\n Question: {question}")
     
     result = pipeline.answer_question(
         question,
@@ -191,25 +191,25 @@ def example_5_complex_question(pipeline):
     )
     
     if result["status"] == "success":
-        print("\n✅ Answer generated with multi-query expansion!")
-        print(f"\n🤖 Answer:\n{result['answer']}")
-        print(f"\n📚 Documents retrieved: {result['documents_retrieved']}")
+        print("\n Answer generated with multi-query expansion!")
+        print(f"\n Answer:\n{result['answer']}")
+        print(f"\n Documents retrieved: {result['documents_retrieved']}")
     else:
-        print(f"\n❌ Error: {result.get('error', 'Unknown error')}")
+        print(f"\n Error: {result.get('error', 'Unknown error')}")
 
 
 def interactive_mode(pipeline):
     """Interactive Q&A mode."""
     print("\n" + "="*70)
-    print("💬 Interactive Q&A Mode")
+    print(" Interactive Q&A Mode")
     print("="*70)
     print("\nEnter questions to ask the RAG system. Type 'quit' to exit.")
     
     while True:
-        question = input("\n❓ Your question: ").strip()
+        question = input("\n Your question: ").strip()
         
         if question.lower() in ["quit", "exit", "q"]:
-            print("\n👋 Goodbye!")
+            print("\n Goodbye!")
             break
         
         if not question:
@@ -223,10 +223,10 @@ def interactive_mode(pipeline):
         )
         
         if result["status"] == "success":
-            print(f"\n🤖 Answer:\n{result['answer']}")
-            print(f"\n📚 Documents retrieved: {result['documents_retrieved']}")
+            print(f"\n Answer:\n{result['answer']}")
+            print(f"\n Documents retrieved: {result['documents_retrieved']}")
         else:
-            print(f"\n❌ Error: {result.get('error', 'Unknown error')}")
+            print(f"\n Error: {result.get('error', 'Unknown error')}")
 
 
 def main():
@@ -247,7 +247,7 @@ def main():
         if auto_mode:
             # Run all examples automatically
             print("\n" + "="*70)
-            print("🚀 Running auto examples...")
+            print(" Running auto examples...")
             print("="*70)
             
             example_3_search_documents(pipeline)
@@ -255,12 +255,12 @@ def main():
             example_5_complex_question(pipeline)
             
             print("\n" + "="*70)
-            print("✅ All examples completed!")
+            print(" All examples completed!")
             print("="*70)
         else:
             # Interactive menu
             print("\n" + "="*70)
-            print("📋 Available Examples")
+            print(" Available Examples")
             print("="*70)
             print("\n1. Search documents")
             print("2. Simple question answering")
@@ -269,7 +269,7 @@ def main():
             print("5. Exit")
             
             while True:
-                choice = input("\n👉 Choose an example (1-5): ").strip()
+                choice = input("\n Choose an example (1-5): ").strip()
                 
                 if choice == "1":
                     example_3_search_documents(pipeline)
@@ -280,13 +280,13 @@ def main():
                 elif choice == "4":
                     interactive_mode(pipeline)
                 elif choice == "5":
-                    print("\n👋 Goodbye!")
+                    print("\n Goodbye!")
                     break
                 else:
                     print("Invalid choice. Please try again.")
     
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        print(f"\n Error: {str(e)}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

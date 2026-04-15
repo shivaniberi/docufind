@@ -19,13 +19,13 @@ source venv/bin/activate
 
 # Kill any existing processes on ports 8000 and 8001
 echo "🛑 Killing any existing processes..."
-pkill -9 -f "python run_server_fixed.py" 2>/dev/null || true
+pkill -9 -f "python run.py" 2>/dev/null || true
 pkill -9 -f "python serve_test_ui.py" 2>/dev/null || true
 sleep 1
 
 # Start API Server
 echo "📍 Starting API Server on http://127.0.0.1:8000..."
-python run_server_fixed.py &
+python run.py &
 API_PID=$!
 sleep 3
 

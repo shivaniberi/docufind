@@ -20,10 +20,10 @@ class Colors:
 def check(condition, message):
     """Print check result"""
     if condition:
-        print(f"  {Colors.GREEN}✅{Colors.RESET} {message}")
+        print(f"  {Colors.GREEN}{Colors.RESET} {message}")
         return True
     else:
-        print(f"  {Colors.RED}❌{Colors.RESET} {message}")
+        print(f"  {Colors.RED}{Colors.RESET} {message}")
         return False
 
 def section(title):
@@ -33,7 +33,7 @@ def section(title):
     print(f"{Colors.BLUE}{'='*60}{Colors.RESET}")
 
 def main():
-    print(f"\n{Colors.YELLOW}🚀 PHASE 2 VERIFICATION SCRIPT{Colors.RESET}\n")
+    print(f"\n{Colors.YELLOW} PHASE 2 VERIFICATION SCRIPT{Colors.RESET}\n")
     
     docufind_dir = Path("/Users/vallabhnaik/Desktop/docufind")
     all_passed = True
@@ -58,7 +58,7 @@ def main():
     
     required_files = {
         "mcp_server/document_server.py": "FastMCP server implementation",
-        "run_server.py": "Server runner",
+        "run.py": "Unified server runner",
         "serve_test_ui.py": "Test UI server",
         "test_server.py": "Python test script",
         "example_usage.py": "Usage examples",
@@ -167,18 +167,18 @@ def main():
     section("SUMMARY")
     
     if all_passed:
-        print(f"\n{Colors.GREEN}✅ ALL CHECKS PASSED!{Colors.RESET}")
+        print(f"\n{Colors.GREEN} ALL CHECKS PASSED!{Colors.RESET}")
         print(f"\n{Colors.YELLOW}Your Phase 2 setup is complete and ready!{Colors.RESET}\n")
-        print("🚀 Next steps:")
+        print(" Next steps:")
         print("  1. Open Terminal 1: cd /Users/vallabhnaik/Desktop/docufind")
-        print("  2. Run: source venv/bin/activate && python run_server.py")
+        print("  2. Run: source venv/bin/activate && python run.py")
         print("  3. Open Terminal 2: cd /Users/vallabhnaik/Desktop/docufind")
         print("  4. Run: source venv/bin/activate && python serve_test_ui.py")
         print("  5. Visit: http://127.0.0.1:8001/test_ui.html")
         print("\n")
         return 0
     else:
-        print(f"\n{Colors.RED}❌ SOME CHECKS FAILED{Colors.RESET}")
+        print(f"\n{Colors.RED} SOME CHECKS FAILED{Colors.RESET}")
         print(f"\n{Colors.YELLOW}Please fix the issues above and try again.{Colors.RESET}\n")
         return 1
 

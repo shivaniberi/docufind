@@ -1,22 +1,21 @@
 """
 Vector Embedder Module
 
-Handles creation and management of vector embeddings using
-Google Generative AI embeddings and FAISS vector store.
+Handles creation and management of vector embeddings with FAISS.
 
-Uses:
-- GoogleGenerativeAIEmbeddings: For generating embeddings
-- FAISS: For efficient similarity search
+Supports two embedding backends:
+- local (default): HuggingFace sentence-transformers (no API quota dependency)
+- gemini: Google Generative AI embeddings
 """
 
 import os
 import json
 import logging
-import pickle
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
 
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 
@@ -39,38 +38,89 @@ class VectorStore:
         self,
         api_key: Optional[str] = None,
         embeddings_dir: Optional[str] = None,
-        model_name: str = "models/gemini-embedding-001"
+        model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
+        backend: Optional[str] = None,
     ):
         """
         Initialize the VectorStore.
         
         Args:
-            api_key (str): Google API key. If None, uses GOOGLE_API_KEY env var
+            api_key (str): Google API key if using gemini backend.
             embeddings_dir (str): Directory to store embeddings. Default: ./embeddings
-            model_name (str): Embedding model name. Default: models/gemini-embedding-001
+            model_name (str): Embedding model name.
+            backend (str): "local" (default) or "gemini". Reads EMBEDDING_BACKEND if not set.
         """
         # Get API key
         self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
-        if not self.api_key:
-            raise ValueError("GOOGLE_API_KEY not found in environment or parameters")
+        self.backend = (backend or os.getenv("EMBEDDING_BACKEND", "local")).lower()
+        if self.backend == "hf":
+            self.backend = "local"
+        if self.backend not in {"local", "gemini"}:
+            raise ValueError(f"Unsupported embedding backend: {self.backend}")
         
         # Set embeddings directory
         self.embeddings_dir = Path(embeddings_dir or "./embeddings")
         self.embeddings_dir.mkdir(exist_ok=True)
         
-        self.model_name = model_name
-        
+        # Pick backend model defaults if caller didn't explicitly override.
+        if self.backend == "gemini" and model_name == "sentence-transformers/all-MiniLM-L6-v2":
+            self.model_name = "models/gemini-embedding-001"
+        elif self.backend == "local" and model_name == "models/gemini-embedding-001":
+            self.model_name = "sentence-transformers/all-MiniLM-L6-v2"
+        else:
+            self.model_name = model_name
+
         # Initialize embeddings model
-        self.embeddings = GoogleGenerativeAIEmbeddings(
-            model=model_name,
-            google_api_key=self.api_key
-        )
+        self.embeddings = self._build_embeddings()
         
         # Vector store (will be loaded or created)
         self.faiss_store: Optional[FAISS] = None
         self.metadata_store: Dict[str, Dict] = {}  # Store additional metadata
         
-        logger.info(f"VectorStore initialized with model={model_name}")
+        logger.info(
+            f"VectorStore initialized with backend={self.backend}, model={self.model_name}"
+        )
+
+    def _build_embeddings(self):
+        """Create embedding client based on selected backend."""
+        if self.backend == "gemini":
+            if not self.api_key:
+                raise ValueError(
+                    "GOOGLE_API_KEY is required when EMBEDDING_BACKEND=gemini"
+                )
+            return GoogleGenerativeAIEmbeddings(
+                model=self.model_name,
+                google_api_key=self.api_key,
+            )
+
+        # local backend
+        return HuggingFaceEmbeddings(
+            model_name=self.model_name,
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": True},
+        )
+
+    @staticmethod
+    def _is_quota_error(exc: Exception) -> bool:
+        text = str(exc).upper()
+        return (
+            "RESOURCE_EXHAUSTED" in text
+            or "429" in text
+            or "QUOTA" in text
+            or "RATE LIMIT" in text
+        )
+
+    def _switch_to_local_embeddings(self, reason: Exception) -> None:
+        """Downgrade to local embeddings when remote quota is exhausted."""
+        self.backend = "local"
+        self.model_name = os.getenv(
+            "LOCAL_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"
+        )
+        logger.warning(
+            "Embedding backend switched to local due to quota/rate issue: %s",
+            reason,
+        )
+        self.embeddings = self._build_embeddings()
     
     def add_documents(
         self,
@@ -94,16 +144,30 @@ class VectorStore:
         try:
             logger.info(f"Adding {len(documents)} documents to collection '{collection_name}'")
             
-            # Create or update FAISS store
-            if self.faiss_store is None:
-                logger.info("Creating new FAISS store")
-                self.faiss_store = FAISS.from_documents(
-                    documents,
-                    self.embeddings
-                )
-            else:
-                logger.info("Adding to existing FAISS store")
-                self.faiss_store.add_documents(documents)
+            # Create or update FAISS store. If Gemini embedding quota is hit,
+            # auto-fallback to local embeddings and retry once.
+            try:
+                if self.faiss_store is None:
+                    logger.info("Creating new FAISS store")
+                    self.faiss_store = FAISS.from_documents(
+                        documents,
+                        self.embeddings
+                    )
+                else:
+                    logger.info("Adding to existing FAISS store")
+                    self.faiss_store.add_documents(documents)
+            except Exception as exc:
+                if self.backend == "gemini" and self._is_quota_error(exc):
+                    self._switch_to_local_embeddings(exc)
+                    if self.faiss_store is None:
+                        self.faiss_store = FAISS.from_documents(
+                            documents,
+                            self.embeddings
+                        )
+                    else:
+                        self.faiss_store.add_documents(documents)
+                else:
+                    raise
             
             # Store metadata
             for doc in documents:

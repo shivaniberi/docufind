@@ -63,19 +63,17 @@ class DocumentServerClient:
         return result.get("status") == "success"
 
 
-# ============================================================================
 # EXAMPLE USAGE
-# ============================================================================
 
 def main():
-    print("🚀 FastMCP Document Server - Usage Examples\n")
+    print(" FastMCP Document Server - Usage Examples\n")
     print("="*60)
     
     # Initialize client
     client = DocumentServerClient()
     
     # Example 1: List documents
-    print("\n📋 Example 1: Listing Documents")
+    print("\n Example 1: Listing Documents")
     print("-" * 60)
     try:
         documents = client.list_documents()
@@ -86,7 +84,7 @@ def main():
         print(f"Error: {e}")
     
     # Example 2: Read a document
-    print("\n📖 Example 2: Reading Document Content")
+    print("\n Example 2: Reading Document Content")
     print("-" * 60)
     try:
         if documents:
@@ -99,7 +97,7 @@ def main():
         print(f"Error: {e}")
     
     # Example 3: Save a summary
-    print("\n💾 Example 3: Saving a Summary")
+    print("\n Example 3: Saving a Summary")
     print("-" * 60)
     try:
         if documents:
@@ -118,12 +116,12 @@ def main():
                 summary_text,
                 metadata
             )
-            print(f"✅ Summary saved: {summary_file}")
+            print(f" Summary saved: {summary_file}")
     except Exception as e:
         print(f"Error: {e}")
     
     # Example 4: Retrieve a summary
-    print("\n🔍 Example 4: Retrieving a Summary")
+    print("\n Example 4: Retrieving a Summary")
     print("-" * 60)
     try:
         if documents:
@@ -135,7 +133,7 @@ def main():
         print(f"Error: {e}")
     
     # Example 5: Integration with AI
-    print("\n🤖 Example 5: AI Integration Pattern")
+    print("\n Example 5: AI Integration Pattern")
     print("-" * 60)
     print("""
     Here's how to integrate with Google Gemini API:
@@ -166,7 +164,7 @@ def main():
     """)
     
     print("\n" + "="*60)
-    print("✅ Examples complete!")
+    print(" Examples complete!")
     print("="*60 + "\n")
 
 

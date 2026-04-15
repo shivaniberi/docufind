@@ -77,9 +77,9 @@ class GenerativeAIModel:
                     "max_output_tokens": self.generation_config.max_output_tokens,
                 }
             )
-            logger.info(f"✅ Initialized model: {model_name}")
+            logger.info(f"Initialized model: {model_name}")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize model: {str(e)}")
+            logger.error(f"Failed to initialize model: {str(e)}")
             raise
     
     def generate(
@@ -159,7 +159,7 @@ relevant information, say so."""
         Returns:
             str: Formatted sources text
         """
-        sources_text = "\n📚 Sources:\n"
+        sources_text = "\nSources:\n"
         for i, (doc, score) in enumerate(sources, 1):
             # Extract source info from document
             source = doc.metadata.get("source", "Unknown")

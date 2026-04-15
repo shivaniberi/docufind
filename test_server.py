@@ -22,11 +22,11 @@ def test_list_documents():
     
     if response.status_code == 200:
         result = response.json()
-        print("✅ Success!")
+        print(" Success!")
         print(json.dumps(result, indent=2))
         return result
     else:
-        print(f"❌ Error: {response.status_code}")
+        print(f" Error: {response.status_code}")
         print(response.text)
         return None
 
@@ -45,7 +45,7 @@ def test_read_document(file_name):
     
     if response.status_code == 200:
         result = response.json()
-        print("✅ Success!")
+        print(" Success!")
         print(f"File Name: {result['file_name']}")
         print(f"File Type: {result['file_type']}")
         print(f"File Size: {result['file_size']} bytes")
@@ -53,7 +53,7 @@ def test_read_document(file_name):
         print(result['content'][:300] + "..." if len(result['content']) > 300 else result['content'])
         return result
     else:
-        print(f"❌ Error: {response.status_code}")
+        print(f" Error: {response.status_code}")
         print(response.text)
         return None
 
@@ -86,11 +86,11 @@ def test_save_summary(file_name, summary):
     
     if response.status_code == 200:
         result = response.json()
-        print("✅ Success!")
+        print(" Success!")
         print(json.dumps(result, indent=2))
         return result
     else:
-        print(f"❌ Error: {response.status_code}")
+        print(f" Error: {response.status_code}")
         print(response.text)
         return None
 
@@ -109,19 +109,19 @@ def test_get_summary(file_name):
     
     if response.status_code == 200:
         result = response.json()
-        print("✅ Success!")
+        print(" Success!")
         print(json.dumps(result, indent=2))
         return result
     else:
-        print(f"❌ Error: {response.status_code}")
+        print(f" Error: {response.status_code}")
         print(response.text)
         return None
 
 
 def main():
-    print("\n" + "🚀 "*20)
+    print("\n" + " "*20)
     print("FASTMCP DOCUMENT SERVER - TESTING SUITE")
-    print("🚀 "*20)
+    print(" "*20)
     
     # Wait a moment for the server to be ready
     time.sleep(2)
@@ -147,16 +147,16 @@ def main():
                     test_get_summary(first_doc)
         
         print("\n" + "="*60)
-        print("✅ TESTING COMPLETE!")
+        print(" TESTING COMPLETE!")
         print("="*60)
-        print("\n📝 Summary:")
+        print("\n Summary:")
         print("- All tools tested successfully")
         print("- Server is responding correctly")
         print("- Check http://127.0.0.1:8000/docs for interactive API docs")
         print("\n" + "="*60 + "\n")
         
     except Exception as e:
-        print(f"\n❌ Error during testing: {str(e)}")
+        print(f"\n Error during testing: {str(e)}")
         print("Make sure the server is running on http://127.0.0.1:8000")
 
 

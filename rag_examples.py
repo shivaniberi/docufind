@@ -50,7 +50,7 @@ def example_1_load_documents():
         if Path("./documents").joinpath(test_file).exists():
             print(f"\nLoading document: {test_file}")
             chunks = loader.load_document(test_file)
-            print(f"✓ Loaded {len(chunks)} chunks")
+            print(f" Loaded {len(chunks)} chunks")
             print(f"  First chunk preview: {chunks[0].page_content[:100]}...")
         
     except Exception as e:
@@ -73,11 +73,11 @@ def example_2_create_embeddings():
         all_docs = loader.load_all_documents()
         
         if not all_docs:
-            print("⚠ No documents found to embed")
+            print(" No documents found to embed")
             return
         
         total_chunks = sum(len(chunks) for chunks in all_docs.values())
-        print(f"✓ Loaded {len(all_docs)} files with {total_chunks} total chunks")
+        print(f" Loaded {len(all_docs)} files with {total_chunks} total chunks")
         
         # Add documents to vector store
         print("\nCreating embeddings with Google Generative AI...")
@@ -87,7 +87,7 @@ def example_2_create_embeddings():
         
         # Display store info
         info = vector_store.get_store_info()
-        print(f"\n✓ Vector store created:")
+        print(f"\n Vector store created:")
         print(f"  - Model: {info['model']}")
         print(f"  - Documents: {info['documents']}")
         print(f"  - Collections: {info['collections']}")
@@ -95,7 +95,7 @@ def example_2_create_embeddings():
         # Save to disk
         print("\nSaving embeddings to disk...")
         vector_store.save_to_disk("documents")
-        print("✓ Embeddings saved to ./embeddings/documents/")
+        print(" Embeddings saved to ./embeddings/documents/")
         
     except Exception as e:
         logger.error(f"Error in example 2: {str(e)}")
@@ -114,10 +114,10 @@ def example_3_semantic_search():
         # Load existing embeddings
         print("\nLoading embeddings from disk...")
         if not vector_store.load_from_disk("documents"):
-            print("⚠ No saved embeddings found. Run example 2 first.")
+            print(" No saved embeddings found. Run example 2 first.")
             return
         
-        print("✓ Embeddings loaded")
+        print(" Embeddings loaded")
         
         # Initialize retriever
         retriever = Retriever(vector_store, k=4, score_threshold=0.0)
@@ -130,9 +130,9 @@ def example_3_semantic_search():
         ]
         
         for query in queries:
-            print(f"\n{'─'*80}")
+            print(f"\n{''*80}")
             print(f"Query: '{query}'")
-            print('─'*80)
+            print(''*80)
             
             # Retrieve documents
             results = retriever.retrieve(query, k=3)
@@ -171,7 +171,7 @@ def example_4_multi_query_rag():
         
         # Load embeddings
         if not vector_store.load_from_disk("documents"):
-            print("⚠ No saved embeddings found. Run example 2 first.")
+            print(" No saved embeddings found. Run example 2 first.")
             return
         
         retriever = Retriever(vector_store, k=3)
@@ -194,7 +194,7 @@ def example_4_multi_query_rag():
         print("\nPerforming multi-query retrieval...")
         results = retriever.retrieve_multi_query(reformulated_queries, k=3, deduplicate=True)
         
-        print(f"\n✓ Retrieved {len(results)} unique documents")
+        print(f"\n Retrieved {len(results)} unique documents")
         
         for i, (doc, score, queries_matched) in enumerate(results, 1):
             source = doc.metadata.get("source", "unknown")
@@ -204,7 +204,7 @@ def example_4_multi_query_rag():
         
         # Assemble context
         context = retriever.assemble_context_with_queries(results, max_tokens=2000)
-        print(f"\n✓ Assembled context ({len(context)} characters)")
+        print(f"\n Assembled context ({len(context)} characters)")
         print(f"Context preview:\n{context[:300]}...\n")
         
     except Exception as e:
@@ -236,22 +236,22 @@ def example_5_rag_pipeline():
         user_query = "Explain the concept of gradient descent"
         
         print(f"\nUser Query: '{user_query}'")
-        print("\n" + "─"*80)
+        print("\n" + ""*80)
         print("RAG Pipeline Execution")
-        print("─"*80)
+        print(""*80)
         
         # Step 1: Retrieve relevant documents
-        print("\n1️⃣  Retrieving relevant documents...")
+        print("\n1  Retrieving relevant documents...")
         retrieved = retriever.retrieve(user_query, k=4)
-        print(f"   ✓ Retrieved {len(retrieved)} documents")
+        print(f"    Retrieved {len(retrieved)} documents")
         
         # Step 2: Assemble context
-        print("\n2️⃣  Assembling context for LLM...")
+        print("\n2  Assembling context for LLM...")
         context = retriever.assemble_context(retrieved, max_tokens=2000)
-        print(f"   ✓ Context assembled ({len(context)} characters)")
+        print(f"    Context assembled ({len(context)} characters)")
         
         # Step 3: Format prompt for LLM
-        print("\n3️⃣  Formatting LLM prompt...")
+        print("\n3  Formatting LLM prompt...")
         llm_prompt = f"""Use the following context to answer the question. If the context doesn't contain relevant information, say so.
 
 Context:
@@ -261,12 +261,12 @@ Question: {user_query}
 
 Answer:"""
         
-        print(f"   ✓ Prompt ready for LLM")
+        print(f"    Prompt ready for LLM")
         print(f"\nPrompt Preview (first 300 chars):")
         print(f"{llm_prompt[:300]}...")
         
         # Step 4: Summary
-        print("\n4️⃣  Retrieval Summary")
+        print("\n4  Retrieval Summary")
         summary = retriever.get_summary(retrieved)
         print(f"   - Documents retrieved: {summary['total_documents']}")
         print(f"   - Average relevance: {summary['average_score']:.4f}")
@@ -278,9 +278,9 @@ Answer:"""
 
 def main():
     """Run all examples"""
-    print("\n" + "╔"+ "="*78 + "╗")
-    print("║" + " "*20 + "LangChain RAG System - Examples & Tests" + " "*20 + "║")
-    print("╚" + "="*78 + "╝")
+    print("\n" + ""+ "="*78 + "")
+    print("" + " "*20 + "LangChain RAG System - Examples & Tests" + " "*20 + "")
+    print("" + "="*78 + "")
     
     examples = [
         ("1", "Load and Split Documents", example_1_load_documents),
@@ -300,7 +300,7 @@ def main():
         choice = input("\nSelect example (0-6): ").strip()
         
         if choice == "0":
-            print("\nGoodbye! 👋")
+            print("\nGoodbye! ")
             break
         
         elif choice == "6":

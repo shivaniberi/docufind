@@ -70,9 +70,7 @@ class TestResults:
         print("="*70)
 
 
-# ============================================================================
 # Test 1: Session Manager
-# ============================================================================
 
 def test_session_manager(results: TestResults):
     """Test session and memory management."""
@@ -133,9 +131,7 @@ def test_session_manager(results: TestResults):
         results.add_fail("Session Manager Tests", str(e))
 
 
-# ============================================================================
 # Test 2: RAG Pipeline Components
-# ============================================================================
 
 def test_rag_pipeline(results: TestResults):
     """Test RAG pipeline components."""
@@ -199,9 +195,7 @@ def test_rag_pipeline(results: TestResults):
         results.add_fail("RAG Pipeline Tests", str(e))
 
 
-# ============================================================================
 # Test 3: Agent Components
-# ============================================================================
 
 def test_agents(results: TestResults):
     """Test agent components."""
@@ -298,9 +292,7 @@ def test_orchestrator(results: TestResults):
         results.add_fail("Orchestrator Agent Tests", str(e))
 
 
-# ============================================================================
 # Test 5: File Structure
-# ============================================================================
 
 def test_file_structure(results: TestResults):
     """Test that all required files exist."""
@@ -311,12 +303,17 @@ def test_file_structure(results: TestResults):
     required_files = {
         "agents/summarizer_agent.py": "Summarizer agent module",
         "agents/orchestrator.py": "Orchestrator agent module",
+        "agents/graph.py": "LangGraph multi-agent graph",
+        "agents/reflection_agent.py": "Reflection critique agent",
         "agents/__init__.py": "Agents package init",
         "memory/session_manager.py": "Session manager module",
         "memory/__init__.py": "Memory package init",
         "rag/llm.py": "LLM integration module",
         "rag/pipeline.py": "RAG pipeline module",
-        "run_server_with_rag.py": "FastAPI server with RAG",
+        "rag/bm25_retriever.py": "BM25 sparse retriever",
+        "rag/rrf.py": "Reciprocal rank fusion module",
+        "run.py": "Unified FastAPI server with RAG",
+        "ui/streamlit_app.py": "Primary Streamlit UI",
         "rag_pipeline_examples.py": "RAG pipeline examples",
     }
     
@@ -329,9 +326,7 @@ def test_file_structure(results: TestResults):
             results.add_fail(f"File: {filepath}", f"Missing: {description}")
 
 
-# ============================================================================
 # Test 6: Imports and Dependencies
-# ============================================================================
 
 def test_dependencies(results: TestResults):
     """Test that all dependencies are available."""
@@ -358,9 +353,7 @@ def test_dependencies(results: TestResults):
             results.add_fail(f"Import: {module_name}", f"{description} - {str(e)}")
 
 
-# ============================================================================
 # Test 7: Configuration and Environment
-# ============================================================================
 
 def test_environment(results: TestResults):
     """Test environment configuration."""
@@ -390,9 +383,7 @@ def test_environment(results: TestResults):
         results.add_fail(".env file", "Not found")
 
 
-# ============================================================================
 # Main Test Runner
-# ============================================================================
 
 def main():
     """Run all tests."""

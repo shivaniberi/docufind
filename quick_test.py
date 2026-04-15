@@ -9,7 +9,7 @@ import sys
 
 BASE_URL = "http://127.0.0.1:8000"
 
-print("🔍 FastMCP Server Diagnostic Test\n")
+print(" FastMCP Server Diagnostic Test\n")
 
 # Test 1: Root endpoint
 print("=" * 60)
@@ -17,10 +17,10 @@ print("TEST 1: Root endpoint")
 print("=" * 60)
 try:
     response = requests.get(f"{BASE_URL}/", timeout=5)
-    print(f"✅ Server is running (Status: {response.status_code})")
+    print(f" Server is running (Status: {response.status_code})")
     print(f"Response headers: {dict(response.headers)}")
 except Exception as e:
-    print(f"❌ Cannot connect to server: {e}")
+    print(f" Cannot connect to server: {e}")
     sys.exit(1)
 
 # Test 2: Docs endpoint
@@ -29,9 +29,9 @@ print("TEST 2: API Docs endpoint")
 print("=" * 60)
 try:
     response = requests.get(f"{BASE_URL}/docs", timeout=5)
-    print(f"✅ Docs available (Status: {response.status_code})")
+    print(f" Docs available (Status: {response.status_code})")
 except Exception as e:
-    print(f"❌ Docs not available: {e}")
+    print(f" Docs not available: {e}")
 
 # Test 3: List tools
 print("\n" + "=" * 60)
@@ -48,7 +48,7 @@ try:
     print(f"Response:")
     print(json.dumps(response.json(), indent=2))
 except Exception as e:
-    print(f"❌ Error: {e}")
+    print(f" Error: {e}")
     try:
         print(f"Response text: {response.text}")
     except:
@@ -73,8 +73,8 @@ try:
     if result.get('content'):
         print(f"Content preview: {result.get('content')[:200]}...")
 except Exception as e:
-    print(f"❌ Error: {e}")
+    print(f" Error: {e}")
 
 print("\n" + "=" * 60)
-print("✅ All tests completed!")
+print(" All tests completed!")
 print("=" * 60)

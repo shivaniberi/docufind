@@ -1,15 +1,7 @@
 """
 RAG Pipeline Module
 
-Combines the Retriever (for finding context) and GenerativeAIModel (for answering)
-into a unified interface for question-answering with source citations.
-
-Architecture:
-1. DocumentLoader: Load and chunk documents
-2. VectorStore: Create embeddings and index
-3. Retriever: Semantic search for relevant documents
-4. GenerativeAIModel: Answer generation using Gemini
-5. RAGPipeline: Orchestrates all components
+Combines retrieval (BM25/FAISS side) and generation into a unified interface.
 """
 
 import os
@@ -35,7 +27,7 @@ class RAGConfig:
     score_threshold: float = 0.0  # Minimum similarity score
     
     # Embedding settings
-    embedding_model: str = "models/gemini-embedding-001"
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     
     # Generation settings
     llm_model: str = "gemini-2.0-flash"
@@ -69,28 +61,30 @@ class RAGPipeline:
         
         Args:
             config (RAGConfig): Pipeline configuration
-            api_key (str): Google API key. If None, uses GOOGLE_API_KEY env var
+            api_key (str): Optional Google API key used only for Gemini generation.
         """
         self.config = config or RAGConfig()
         self.api_key = api_key or os.getenv("GOOGLE_API_KEY")
-        
-        if not self.api_key:
-            raise ValueError("GOOGLE_API_KEY environment variable not set")
+        self.embedding_backend = os.getenv("EMBEDDING_BACKEND", "local").lower()
+        if self.embedding_backend == "hf":
+            self.embedding_backend = "local"
+        self.llm = None  # Lazily initialized only when answer generation is called.
         
         # Initialize components
-        logger.info("🚀 Initializing RAG Pipeline...")
+        logger.info("Initializing RAG pipeline...")
         
         try:
             # 1. Document Loader
             self.loader = DocumentLoader()
-            logger.info("✅ DocumentLoader initialized")
+            logger.info("DocumentLoader initialized")
             
             # 2. Vector Store (Embeddings)
             self.vector_store = VectorStore(
                 api_key=self.api_key,
-                model_name=self.config.embedding_model
+                model_name=self.config.embedding_model,
+                backend=self.embedding_backend,
             )
-            logger.info("✅ VectorStore initialized")
+            logger.info("VectorStore initialized")
             
             # 3. Retriever (Search)
             self.retriever = Retriever(
@@ -98,24 +92,36 @@ class RAGPipeline:
                 k=self.config.k,
                 score_threshold=self.config.score_threshold
             )
-            logger.info("✅ Retriever initialized")
+            logger.info("Retriever initialized")
             
-            # 4. LLM (Generation)
-            gen_config = GenerationConfig(
-                temperature=self.config.temperature,
-                max_output_tokens=self.config.max_output_tokens
-            )
-            self.llm = GenerativeAIModel(
-                api_key=self.api_key,
-                model_name=self.config.llm_model,
-                generation_config=gen_config
-            )
-            logger.info("✅ GenerativeAIModel initialized")
-            logger.info("🎉 RAG Pipeline fully initialized!")
+            logger.info("RAG pipeline fully initialized")
             
         except Exception as e:
-            logger.error(f"❌ Failed to initialize RAG Pipeline: {str(e)}")
+            logger.error(f"Failed to initialize RAG pipeline: {str(e)}")
             raise
+
+    def _get_llm(self) -> GenerativeAIModel:
+        """Initialize generation model only when needed."""
+        if self.llm is not None:
+            return self.llm
+
+        if not self.api_key:
+            raise ValueError(
+                "GOOGLE_API_KEY is required for pipeline.answer_question(). "
+                "Index/search will still work with local embeddings."
+            )
+
+        gen_config = GenerationConfig(
+            temperature=self.config.temperature,
+            max_output_tokens=self.config.max_output_tokens
+        )
+        self.llm = GenerativeAIModel(
+            api_key=self.api_key,
+            model_name=self.config.llm_model,
+            generation_config=gen_config
+        )
+        logger.info("GenerativeAIModel initialized")
+        return self.llm
     
     def index_documents(self, collection_name: str = "default") -> Dict:
         """
@@ -127,7 +133,7 @@ class RAGPipeline:
         Returns:
             Dict: Indexing statistics
         """
-        logger.info(f"📚 Indexing documents into collection: {collection_name}")
+        logger.info(f"Indexing documents into collection: {collection_name}")
         
         try:
             # Load all documents
@@ -138,7 +144,7 @@ class RAGPipeline:
             for file_name, chunks in documents_dict.items():
                 total_docs += 1
                 total_chunks += len(chunks)
-                logger.info(f"  📄 {file_name}: {len(chunks)} chunks")
+                logger.info(f"  {file_name}: {len(chunks)} chunks")
             
             # Combine all chunks
             all_chunks = []
@@ -148,7 +154,7 @@ class RAGPipeline:
             # Add to vector store
             if all_chunks:
                 self.vector_store.add_documents(all_chunks, collection_name)
-                logger.info(f"✅ Added {len(all_chunks)} chunks to vector store")
+                logger.info(f"Added {len(all_chunks)} chunks to vector store")
             
             return {
                 "documents_loaded": total_docs,
@@ -180,7 +186,7 @@ class RAGPipeline:
         Returns:
             Dict: Answer with metadata and sources
         """
-        logger.info(f"❓ Answering question: {question}")
+        logger.info(f"Answering question: {question}")
         
         try:
             # 1. Load the vector store collection
@@ -189,7 +195,7 @@ class RAGPipeline:
             # 2. Retrieve relevant documents
             if use_multi_query:
                 # Use multi-query expansion for better retrieval
-                logger.info("🔄 Using multi-query expansion...")
+                logger.info("Using multi-query expansion...")
                 results = self.retriever.retrieve_multi_query(
                     [question],
                     k=self.config.k,
@@ -203,7 +209,7 @@ class RAGPipeline:
                     score_threshold=self.config.score_threshold
                 )
             
-            logger.info(f"📖 Retrieved {len(results)} documents")
+            logger.info(f"Retrieved {len(results)} documents")
             
             # 3. Assemble context from retrieved documents
             context = self.retriever.assemble_context(
@@ -213,8 +219,9 @@ class RAGPipeline:
             )
             
             # 4. Generate answer using LLM
-            logger.info("🤖 Generating answer with Gemini...")
-            answer = self.llm.answer_question(
+            logger.info("Generating answer with model...")
+            llm = self._get_llm()
+            answer = llm.answer_question(
                 question=question,
                 context=context,
                 include_sources=self.config.include_sources,
@@ -224,7 +231,7 @@ class RAGPipeline:
             # 5. Get retrieval summary
             summary = self.retriever.get_summary(results)
             
-            logger.info("✅ Answer generated successfully")
+            logger.info("Answer generated successfully")
             
             return {
                 "question": question,
@@ -323,6 +330,6 @@ class RAGPipeline:
         """Clear vector store cache."""
         try:
             self.vector_store.clear_store()
-            logger.info("✅ Cache cleared")
+            logger.info("Cache cleared")
         except Exception as e:
             logger.error(f"Error clearing cache: {str(e)}")
