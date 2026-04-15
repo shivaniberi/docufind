@@ -17,18 +17,27 @@ It includes:
 
 ## Features
 
-- Ingestion for `PDF`, `TXT`, and `MD` corpora
-- Semantic chunking + metadata-aware indexing
-- Hybrid retrieval:
-- BM25 for exact/keyword matches
-- FAISS for semantic similarity search
-- RRF (Reciprocal Rank Fusion) to combine retriever rankings
-- Agent graph:
-- Classifier node routes simple vs complex queries
-- Retrieval node gathers evidence from hybrid retrievers
-- Summary node generates grounded responses from retrieved context
-- Reflection node critiques and rewrites when needed
-- Local embedding option to avoid remote embedding quota failures
+- Multi-format ingestion: `PDF`, `TXT`, `MD`  
+- Semantic chunking with metadata-aware indexing  
+
+- Hybrid retrieval combining lexical and vector search:
+  - BM25 for keyword-based matching  
+  - FAISS for semantic similarity search  
+  - Reciprocal Rank Fusion (RRF) for ranking optimization  
+
+- Context-aware conversational memory for improved multi-turn interactions  
+
+- Multi-agent reasoning pipeline (LangChain + LangGraph):
+  - Classifier Node → routes simple vs complex queries  
+  - Retrieval Node → gathers relevant context  
+  - Generation Node → produces grounded responses  
+  - Reflection Node → validates and refines outputs  
+
+- ADK (Agent Development Kit) integration for flexible agent execution and optional runtime orchestration  
+
+- Support for local embeddings to reduce dependency on external APIs and avoid rate limits  
+
+- Extensible architecture for integrating multiple LLM providers and tools  
 
 ## Requirements
 
