@@ -8,6 +8,7 @@ It includes:
 - LangGraph multi-agent flow for classification, retrieval, summary, and reflection
 - Hybrid retrieval using BM25 + FAISS + RRF
 
+<img width="1302" height="767" alt="Screenshot 2026-04-15 at 1 12 49 AM (1)" src="https://github.com/user-attachments/assets/ac51f347-af02-47ac-933a-537bd169cff5" />
 
 
 ## Features
